@@ -49,6 +49,11 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+ALTER TABLE products
+  ADD COLUMN reorder_point INT NOT NULL DEFAULT 0 AFTER min_stock,
+  ADD COLUMN safety_stock INT NOT NULL DEFAULT 0 AFTER reorder_point,
+  ADD COLUMN lead_time_days INT NOT NULL DEFAULT 0 AFTER safety_stock;
+
 -- === Clientes ===
 CREATE TABLE IF NOT EXISTS customers (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -166,3 +171,57 @@ SELECT
 FROM products p
 LEFT JOIN stock_moves sm ON sm.product_id = p.id
 GROUP BY p.id, p.sku, p.name;
+
+-- === Vista: salud de stock (semáforo + días de cobertura) ===
+DROP VIEW IF EXISTS vw_stock_health;
+CREATE VIEW vw_stock_health AS
+WITH demand AS (
+  SELECT
+    si.product_id,
+    COALESCE(SUM(si.quantity) / NULLIF(DATEDIFF(MAX(s.sold_at), MIN(s.sold_at)), 0), 0) AS avg_daily_sales
+  FROM sale_items si
+  JOIN sales s ON s.id = si.sale_id AND s.status = 'CONFIRMED'
+  GROUP BY si.product_id
+)
+SELECT
+  p.id AS product_id,
+  p.sku,
+  p.name,
+  COALESCE(v.stock, 0) AS stock,
+  p.min_stock,
+  p.reorder_point,
+  p.safety_stock,
+  p.lead_time_days,
+  COALESCE(d.avg_daily_sales, 0) AS avg_daily_sales,
+  CASE
+    WHEN COALESCE(v.stock, 0) <= 0 THEN 'SIN_STOCK'
+    WHEN COALESCE(v.stock, 0) <= p.safety_stock THEN 'CRITICO'
+    WHEN COALESCE(v.stock, 0) <= GREATEST(p.min_stock, p.reorder_point) THEN 'BAJO'
+    ELSE 'OK'
+  END AS stock_status,
+  CASE
+    WHEN COALESCE(d.avg_daily_sales, 0) = 0 THEN NULL
+    ELSE CEIL(COALESCE(v.stock, 0) / d.avg_daily_sales)
+  END AS days_of_cover
+FROM products p
+LEFT JOIN vw_stock_current v ON v.product_id = p.id
+LEFT JOIN demand d ON d.product_id = p.id;
+
+-- Consulta “lista de reposición”:
+SELECT
+  p.id, p.sku, p.name,
+  COALESCE(v.stock, 0) AS stock,
+  p.safety_stock,
+  p.lead_time_days,
+  COALESCE(d.avg_daily_sales, 0) AS avg_daily_sales,
+  GREATEST( CEIL(COALESCE(d.avg_daily_sales,0) * p.lead_time_days) + p.safety_stock - COALESCE(v.stock,0), 0) AS suggested_qty
+FROM products p
+LEFT JOIN vw_stock_current v ON v.product_id = p.id
+LEFT JOIN (
+  SELECT si.product_id,
+         COALESCE(SUM(si.quantity) / NULLIF(DATEDIFF(MAX(s.sold_at), MIN(s.sold_at)), 0), 0) AS avg_daily_sales
+  FROM sale_items si
+  JOIN sales s ON s.id = si.sale_id AND s.status = 'CONFIRMED'
+  GROUP BY si.product_id
+) d ON d.product_id = p.id
+WHERE COALESCE(v.stock, 0) <= GREATEST(p.reorder_point, p.safety_stock);
