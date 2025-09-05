@@ -8,6 +8,7 @@ const path = require('path');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const stockMoveRoutes = require('./routes/stockMoveRoutes');
+const saleRoutes = require('./routes/saleRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/products', productRoutes);
 app.use('/auth', authRoutes);
 app.use('/stock-moves', stockMoveRoutes);
+app.use('/sales', saleRoutes);
 
 // 404 básico
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));

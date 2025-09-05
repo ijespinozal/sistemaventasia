@@ -26,9 +26,16 @@ pool.getConnection((err, conn) => {
 
 const query = util.promisify(pool.query).bind(pool);
 
+// 👉 NUEVO: helper para obtener una conexión del pool (para transacciones)
+function getConnection() {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, conn) => (err ? reject(err) : resolve(conn)));
+  });
+}
+
 async function testConnection() {
   const rows = await query('SELECT 1 AS ok');
   console.log('✅ MySQL OK:', rows[0].ok === 1);
 }
 
-module.exports = { pool, query, testConnection };
+module.exports = { pool, query, getConnection, testConnection };
