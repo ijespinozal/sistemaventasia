@@ -7,7 +7,7 @@ ON DUPLICATE KEY UPDATE description=VALUES(description);
 
 -- Usuario admin (la contraseña real la configuraremos en el backend con bcrypt)
 INSERT INTO users (full_name, email, password_hash, is_active)
-VALUES ('Administrador', 'admin@local', '$2a$10$PLACEHOLDERHASH', 1)
+VALUES ('Administrador', 'admin@local', '$2b$10$8DE7eQZNc43AZqghWasWi.HaVkljd62DjNn0gkeQyMU/C./Rr4D42', 1)
 ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
 
 -- Asignar rol admin
