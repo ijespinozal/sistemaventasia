@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { API_BASE_URL } from "../utils/config";
 import { saveSession, clearSession, getToken, getUser } from "../utils/storage";
 
@@ -23,7 +23,9 @@ export default function AuthProvider({ children }) {
       setToken(data.token);
       setUser(data.user);
       return true;
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {

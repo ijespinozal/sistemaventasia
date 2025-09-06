@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 export default function ProtectedRoute({ roles }) {
   const { token, user } = useAuth();
+
   if (!token) return <Navigate to="/login" replace />;
 
   if (roles && roles.length > 0) {

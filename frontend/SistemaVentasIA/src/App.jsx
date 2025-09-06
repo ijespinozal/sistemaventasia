@@ -1,7 +1,7 @@
 import Navbar from "./components/Navbar";
 import AppRoutes from "./routes";
 
-export default function App() {
+const App = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -9,3 +9,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;

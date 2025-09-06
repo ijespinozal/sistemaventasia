@@ -1,8 +1,9 @@
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
-export default function Navbar() {
+const Navbar = () => {
   const { user, logout } = useAuth();
+
   return (
     <header className="bg-white border-b">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -25,3 +26,5 @@ export default function Navbar() {
     </header>
   );
 }
+
+export default Navbar;
