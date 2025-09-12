@@ -15,7 +15,7 @@ export default function Login() {
     setErr("");
     try {
       await login(email, password);
-      nav("/products");
+      nav("/admin/dashboard");
     } catch (e) {
       setErr(e.message);
     }

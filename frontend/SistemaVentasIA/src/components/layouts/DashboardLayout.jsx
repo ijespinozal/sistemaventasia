@@ -1,11 +1,13 @@
 import React, { useContext } from 'react'
-import { UserContext } from '../../context/userContext'
+import useApi from "../../hooks/useApi";
+import useAuth from "../../hooks/useAuth";
 import NavBar from './NavBar'
 import SideMenu from './SideMenu'
 
 const DashboardLayout = ({ children, activeMenu }) => {
 
-    const { user } = useContext(UserContext)
+    const { user } = useAuth();
+    console.log(user)
 
     return (
         <div className="">

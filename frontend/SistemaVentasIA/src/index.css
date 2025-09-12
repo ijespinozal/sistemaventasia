@@ -6,6 +6,7 @@
   --font-display: "Poppins", "sans-serif";
   --breakpoint-3xl: 1920px;
   --color-primary: #1368EC;
+  --color-secundary: #F55151;
 }
 
 @layer base {
@@ -25,7 +26,11 @@
 }
 
 .btn-primary {
-  @apply w-full text-sm font-medium text-white bg-primary shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-blue-600/15 hover:text-blue-600 cursor-pointer
+  @apply text-sm font-medium text-white bg-primary shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-blue-600/15 hover:text-blue-600 cursor-pointer
+}
+
+.btn-delete {
+  @apply w-full text-sm font-medium text-white bg-secundary shadow-lg shadow-purple-600/5 p-[10px] rounded-md my-1 hover:bg-red-600/15 hover:text-red-600 cursor-pointer
 }
 
 .card {
