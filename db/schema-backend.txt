@@ -11,3 +11,7 @@ backend
         - productRoutes.js
         
     server.js
+
+
+admin1@local
+123456
