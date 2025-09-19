@@ -41,6 +41,12 @@ export const SIDE_MENU_DATA = [
     },
     {
         id: "06",
+        label: "Categorias",
+        icon: GoPackage,
+        path: "/admin/categorias"
+    },
+    {
+        id: "07",
         label: "Logout",
         icon: LuLogOut,
         path: "logout"
